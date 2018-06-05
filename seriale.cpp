@@ -1,23 +1,19 @@
 #include "seriale.h"
 
 
-int serial_open(string port, int mode, unsigned int speed, char parity,
+int serial_open(string porta_seriale, int mode, unsigned int speed, char parity,
                 unsigned int bits, unsigned int stop)
 {
 
 
 #ifdef __WIN32__
+{
     DCB dcb; //Struttura che contiene i settaggi
-    char porta_seriale[] = "COM?";
-    //Controllo se viene passato un numero di porta valido
-    if (port < 1 || port > 9)
-        return (void*)(-1);
-    porta_seriale[3] = port + '0';
     HANDLE fileHandle; //Handle alla porta, un po' l'equivalente di FILE* per
                        //la gestione di file ordinari
     //Apertura della porta
     fileHandle = CreateFile(
-         porta_seriale, //Nome della porta (COM1, COM2, COM3 ecc.
+         porta_seriale.c_str(), //Nome della porta (COM1, COM2, COM3 ecc.
          mode,//Apertura il lettura / scrittura
             0, //sharing mode, se 0 la porta non può essere condivisa
             0, //attributi di sicurezza, con 0 l'handle non può essere ereditato
@@ -74,7 +70,46 @@ int serial_open(string port, int mode, unsigned int speed, char parity,
     if(!SetCommTimeouts(fileHandle, &cmt))
         return (void*)(-1);
     return fileHandle;
+}
 #endif // __WIN32__
+
+#ifdef __linux__
+
+int fd = open(
+            porta_seriale.c_str(),
+            mode);
+
+if (fd == -1)
+    return INVALID_VALUE;
+
+struct termios options;
+
+tcgetattr(fd, &options);
+
+cfsetispeed(&options, speed);
+cfsetospeed(&options, speed);
+
+//disabilita il bit di parità
+if (parity == 'n')
+    options.c_cflag &= ~PARENB;
+
+if (bits == 8){
+    options.c_cflag &= ~CSIZE;
+    options.c_cflag |= CS8;
+}
+
+if (stop == 1)
+    options.c_cflag &= ~CSTOPB;
+//timeouts
+options.c_cc[VMIN] = 0;
+options.c_cc[VTIME] = 1;
+
+if(tcsetattr(fd, TCSANOW, &options)!= 0) {
+    return INVALID_VALUE;
+}
+
+return fd;
+#endif // __linux__
 
 }
 
@@ -85,7 +120,7 @@ int serial_read(int serial, char *buf, int n)
 #ifdef __WIN32__
     DWORD i;
     ReadFile(
-        com,//l'handle al file
+        (void *)serial,//l'handle al file
         buf, //puntatore al buffer dei dati
         n, //dimensione dei dati che voglio leggere con una singola operazione
         &i, //la variabile dove finiranno il numero di dati realmente letti
@@ -94,6 +129,13 @@ int serial_read(int serial, char *buf, int n)
     if (i == 0) return -1;
     return i;
 #endif // __WIN32__
+
+#ifdef __linux__
+    int letti = read(serial, buf, n);
+    if (letti == 0)
+        return -1;
+    return letti;
+#endif // __linux__
 }
 
 
@@ -101,7 +143,10 @@ int serial_read(int serial, char *buf, int n)
 void serial_close(int serial)
 {
 #ifdef __WIN32__
-    CloseHandle(com);
+    CloseHandle((void *)serial);
 #endif // __WIN32__
+#ifdef __linux__
+    close(serial);
+#endif // __linux__
 }
 
