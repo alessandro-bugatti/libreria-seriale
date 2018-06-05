@@ -29,15 +29,38 @@
  *  \todo La parte relativa alla scrittura su seriale
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <windows.h>
+#include <cstdio>
+#include <cstdlib>
+#ifdef __WIN32__
+    #include <windows.h>
+#endif // __WIN32__
+#include <string>
+
+using namespace std;
+
 #ifndef SERIALE_H_INCLUDED
 #define SERIALE_H_INCLUDED
 
+#ifdef __WIN32__
+
+const int SERIAL_READ = GENERIC_READ;
+
+#endif // __WIN32__
+
+#ifdef __linux__
+
+#include <sys/types.h>
+#include <fcntl.h>
+
+const int SERIAL_READ = O_RDWR;
+
+#endif // __linux__
+
+const int INVALID_VALUE = -1;
+
 /** \brief Funzione per aprire la porta seriale
  *
- * \param port Numero di porta che deve essere compreso tra 1 e 9
+ * \param port Il nome della porta, potrebbe essere COM3 in Windows e /dev/ttyACM0 in linux
  * \param mode Modalità di lettura/scrittura:
          GENERIC_READ per lettura,
          GENERIC_WRITE per scrittura, possono essere messe
@@ -52,17 +75,17 @@
     </ul>
  * \param bits Il numero di bit che compongono l'unità base di trasmissione
  * \param stop Il numero di bit di stop, tipicamente 0,1 o 2
- * \return L'handle alla risorsa, INVALID_HANDLE_VALUE se fallisce
+ * \return L'handle alla risorsa, INVALID_VALUE se fallisce
  *
  */
 
 
-HANDLE COM_open(int port, int mode, unsigned int speed, char parity,
+int serial_open(string port, int mode, unsigned int speed, char parity,
                 unsigned int bits,unsigned int stop);
 
 /** \brief Funzione per leggere dalla porta seriale
  *
- * \param com L'handle alla porta ritornato da una COM_open eseguita
+ * \param com L'handle alla porta ritornato da una serial_open eseguita
  * con successo
  * \param buf Il riferimento al buffer dove verranno scritti i caratteri
  * letti da seriale
@@ -70,7 +93,9 @@ HANDLE COM_open(int port, int mode, unsigned int speed, char parity,
  *
  */
 
-int COM_read(HANDLE com, char *buf, int n);
-void COM_close(HANDLE com);
+int serial_read(int serial_handle, char *buf, int n);
+
+
+void serial_close(int serial_handle);
 
 #endif // SERIALE_H_INCLUDED
