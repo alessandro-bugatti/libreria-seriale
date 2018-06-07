@@ -28,11 +28,19 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
+
+using namespace std;
 #ifdef __WIN32__
     #include <windows.h>
+    const string nome_seriale = "COM3";
 #endif // __WIN32__
+
+#ifdef __linux__
+    const string nome_seriale = "/dev/ttyACM0";
+#endif // __linux__
 #include "seriale.h"
 
 #define SIZE 1024
@@ -43,7 +51,7 @@ int main()
 {
     int seriale;
     //Apertura della porta seriale, in questo esempio la COM3
-    seriale = serial_open("COM3", SERIAL_READ, 9600, 'n', 8, 1);
+    seriale = serial_open("/dev/ttyACM0", SERIAL_READ, 9600, 'n', 8, 1);
     //Controllo dell'apertura
     if (seriale == INVALID_VALUE)
     {

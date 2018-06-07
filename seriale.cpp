@@ -101,7 +101,7 @@ if (bits == 8){
 if (stop == 1)
     options.c_cflag &= ~CSTOPB;
 //timeouts
-options.c_cc[VMIN] = 0;
+options.c_cc[VMIN] = 100;
 options.c_cc[VTIME] = 1;
 
 if(tcsetattr(fd, TCSANOW, &options)!= 0) {
