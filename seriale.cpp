@@ -11,7 +11,7 @@ int serial_open(string porta_seriale, int mode, unsigned int speed, char parity,
     DCB dcb; //Struttura che contiene i settaggi
     HANDLE fileHandle; //Handle alla porta, un po' l'equivalente di FILE* per
                        //la gestione di file ordinari
-    //Apertura della porta
+    //Apertura della porta seriale
     fileHandle = CreateFile(
          porta_seriale.c_str(), //Nome della porta (COM1, COM2, COM3 ecc.
          mode,//Apertura il lettura / scrittura
@@ -49,7 +49,7 @@ int serial_open(string porta_seriale, int mode, unsigned int speed, char parity,
         1024)//coda di output
     )
         return (void*)(-1);
-    //Imposto i timeouts
+    //Imposto i timeouts a valori standard
     COMMTIMEOUTS cmt;
     //Timeout in lettura tra la lettura di due caratteri consecutivi in ms
     //Se passa più di quel tempo la lettura è considerata conclusa e la
@@ -74,42 +74,85 @@ int serial_open(string porta_seriale, int mode, unsigned int speed, char parity,
 #endif // __WIN32__
 
 #ifdef __linux__
+{
 
-int fd = open(
-            porta_seriale.c_str(),
+
+struct termios options; //Struttura che contiene i settaggi
+int fd; //Handle alla porta, un po' l'equivalente di FILE* per
+        //la gestione di file ordinari
+
+        //Apertura della porta seriale
+fd = open(porta_seriale.c_str(),
             mode);
 
 if (fd == -1)
     return INVALID_VALUE;
 
-struct termios options;
-
+//Carica in options gli attributi correnti della porta seriale
 tcgetattr(fd, &options);
 
+//Viene settata la velocità di input e output
 cfsetispeed(&options, speed);
 cfsetospeed(&options, speed);
 
-//disabilita il bit di parità
-if (parity == 'n')
+//Setta il tipo d parità
+if (parity == 'n') //disabilità il bit di parità
     options.c_cflag &= ~PARENB;
+else if (parity == 'e') //abilità la parità pari
+    {
+        options.c_cflag |= PARENB;
+        options.c_cflag |= ~PARODD;
+    }
+else        //abilità la parità dispari
+    {
+        options.c_cflag |= PARENB;
+        options.c_cflag |= PARODD;
+    }
 
+//Setta il numero di bit di parola
 if (bits == 8){
     options.c_cflag &= ~CSIZE;
     options.c_cflag |= CS8;
 }
+else if (bits == 7){
+    options.c_cflag &= ~CSIZE;
+    options.c_cflag |= CS7;
+}
+else if (bits == 6){
+    options.c_cflag &= ~CSIZE;
+    options.c_cflag |= CS6;
+}
+else if (bits == 5){
+    options.c_cflag &= ~CSIZE;
+    options.c_cflag |= CS5;
+}
 
+//Setta il numero di bit di stop
+//Attualmente se il numero non è nè 1
+//nè 2 il numero di bit viene comunque messo a 1
 if (stop == 1)
     options.c_cflag &= ~CSTOPB;
-//timeouts
-options.c_cc[VMIN] = 100;
+else if (stop == 2)
+    options.c_cflag &= CSTOPB;
+else
+    options.c_cflag &= ~CSTOPB;
+//Setta il numero minimo di caratteri che
+//possono essere letti in un colpo solo
+//attendendo al massimo un certo intervallo di
+//tempo (con i settaggi riportati legge 255 caratteri
+//aspettanto al massimo un decimo di secondo)
+options.c_cc[VMIN] = 255;
 options.c_cc[VTIME] = 1;
 
+//Imposta gli attributi nella seriale
 if(tcsetattr(fd, TCSANOW, &options)!= 0) {
     return INVALID_VALUE;
 }
 
 return fd;
 #endif // __linux__
+
+}
 
 }
 
