@@ -99,6 +99,19 @@ int serial_open(string port, int mode, unsigned int speed, char parity,
 
 int serial_read(int serial_handle, char *buf, int n);
 
+/** \brief Funzione per scrivere sulla porta seriale
+ *
+ * \param com L'handle alla porta ritornato da una serial_open eseguita
+ * con successo
+ * \param buf Il riferimento al buffer dove verranno letti i caratteri
+ * da scrivere su seriale
+ * \param n Il numero di byte da leggere dal buffer e che andranno scritti sulla seriale
+ * \return
+ *
+ */
+
+int serial_write(int serial_handle, char *buf, int n);
+
 
 void serial_close(int serial_handle);
 
