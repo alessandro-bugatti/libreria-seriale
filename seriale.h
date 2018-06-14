@@ -93,6 +93,8 @@ int serial_open(string port, int mode, unsigned int speed, char parity,
  * con successo
  * \param buf Il riferimento al buffer dove verranno scritti i caratteri
  * letti da seriale
+ * \param n Numero di byte che verranno letti al massimo dalla seriale,
+ * in generale è la dimensione del buffer
  * \return
  *
  */
