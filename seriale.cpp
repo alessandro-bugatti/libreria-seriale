@@ -23,7 +23,7 @@ int serial_open(string porta_seriale, int mode, unsigned int speed, char parity,
         );
     //Controllo se l'apertura è fallita
     if (fileHandle == INVALID_HANDLE_VALUE)
-        return (void*)(-1);
+        return (-1);
     //Settaggio dei parametri
     FillMemory(&dcb, sizeof(dcb), 0); //Inizializzo tutti i campi della struttura a zero
     dcb.DCBlength = sizeof(dcb); //Setto il campo lunghezza alla propria dimensione
@@ -38,17 +38,17 @@ int serial_open(string porta_seriale, int mode, unsigned int speed, char parity,
     char settaggi[100];
     sprintf(settaggi,"%d,%c,%d,%d",speed,parity,bits,stop);
     if(!BuildCommDCB(settaggi, &dcb))
-        return (void*)(-1);
+        return (-1);
     //Assegno i settaggi alla porta e controllo se ci sono riuscito
     if(!SetCommState(fileHandle, &dcb))
-        return (void*)(-1);
+        return (-1);
     //Imposto la dimensione del buffer (tipicamente una potenza del 2)
     //in questo esempio 1024 e controllo la riuscita
     if(!SetupComm(fileHandle,
         1024,//coda di input
         1024)//coda di output
     )
-        return (void*)(-1);
+        return (-1);
     //Imposto i timeouts a valori standard
     COMMTIMEOUTS cmt;
     //Timeout in lettura tra la lettura di due caratteri consecutivi in ms
@@ -68,8 +68,8 @@ int serial_open(string porta_seriale, int mode, unsigned int speed, char parity,
     cmt.WriteTotalTimeoutMultiplier = 1000;
     //Assegno i valori alla porta e controllo la riuscita dell'operazione
     if(!SetCommTimeouts(fileHandle, &cmt))
-        return (void*)(-1);
-    return fileHandle;
+        return (-1);
+    return (int)fileHandle;
 }
 #endif // __WIN32__
 
@@ -150,9 +150,11 @@ if(tcsetattr(fd, TCSANOW, &options)!= 0) {
 }
 
 return fd;
-#endif // __linux__
+
 
 }
+
+#endif // __linux__
 
 }
 
