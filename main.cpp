@@ -17,8 +17,7 @@
 */
 
 /*! \file
- *  \brief Esempio di utilizzo della porta seriale per la lettura
- *  Questa versione non è portabile ed è relativa unicamente al S.O. Windows.
+ *  \brief Esempio di utilizzo della porta seriale per la lettura/scrittura
  *  Riferimenti: Serial port programming in Windows and linux, Maxwell Walter, 2003
  *  \author Alessandro Bugatti
  *
@@ -31,6 +30,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <iostream>
 
 using namespace std;
 #ifdef __WIN32__
@@ -46,33 +46,76 @@ using namespace std;
 #define SIZE 1024
 
 char dataIn[SIZE];
+char dataOut[SIZE];
 
 int main()
 {
+    int choice;
     int seriale;
-    //Apertura della porta seriale, in questo esempio la COM3
-    seriale = serial_open("/dev/ttyACM0", SERIAL_READ, 9600, 'n', 8, 1);
-    //Controllo dell'apertura
-    if (seriale == INVALID_VALUE)
+    cout << "Questo è un programma di test per l'utilizzo della seriale con Arduino." << endl
+        << "Premi 1 e invio per avviare la parte che fa solo lettura dei dati da Arduino" << endl
+        << "Arduino ---> PC" << endl
+        << "Premi 2 e invio per avviare la parte che fa lettura/scrittura dei dati da Arduino" << endl
+        << "Arduino <--> PC" << endl;
+    cin >> choice;
+    if (choice == 1)
     {
-        printf("Apertura della seriale fallita\n");
-        return 1;
-    }
-    int read, i=0;
-    //10 letture, solo per verificare il funzionamento
-    while(i < 10)
-    {
-        read = serial_read(seriale,dataIn,100);
-        //La lettura è andata a buon fine
-        if (read != -1)
+        //Apertura della porta seriale, in questo esempio la COM3
+        seriale = serial_open(nome_seriale, SERIAL_READ, 9600, 'n', 8, 1);
+        //Controllo dell'apertura
+        if (seriale == INVALID_VALUE)
         {
-            dataIn[read]='\0';
-            printf("%d byte letti\n%s \n",read,dataIn);
-            i++;
+            printf("Apertura della seriale fallita\n");
+            return 1;
         }
-        //Non c'era niente da leggere
-        else
-            printf("Timeout\n");
+        int read, i=0;
+        //10 letture, solo per verificare il funzionamento
+        while(i < 10)
+        {
+            read = serial_read(seriale,dataIn,100);
+            //La lettura è andata a buon fine
+            if (read != -1)
+            {
+                dataIn[read]='\0';
+                printf("%d byte letti\n%s \n",read,dataIn);
+                i++;
+            }
+            //Non c'era niente da leggere
+            else
+                printf("Timeout\n");
+        }
+    }
+    else if (choice == 2)
+    {
+        //Apertura della porta seriale, in lettura/scrittura
+        seriale = serial_open(nome_seriale, SERIAL_READ | SERIAL_WRITE, 9600, 'n', 8, 1);
+        //Controllo dell'apertura
+        if (seriale == INVALID_VALUE)
+        {
+            printf("Apertura della seriale fallita\n");
+            return 1;
+        }
+        int read, write, i=0;
+        dataOut[0] = 'A';
+        //10 letture, solo per verificare il funzionamento
+        while(i < 10)
+        {
+            //Scrive un carattere
+            write = serial_write(seriale, dataOut,1);
+            //Il programma su Arduino invia dei dati quando riceve un carattere
+            read = serial_read(seriale,dataIn,100);
+            //La lettura è andata a buon fine
+            if (read != -1)
+            {
+                dataIn[read]='\0';
+                printf("%d byte letti\n%s \n",read,dataIn);
+                i++;
+            }
+            //Non c'era niente da leggere
+            else
+                printf("Timeout\n");
+            dataOut[0]++;
+        }
     }
     //Chiusura della seriale
     serial_close(seriale);

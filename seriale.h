@@ -48,6 +48,7 @@ using namespace std;
 #ifdef __WIN32__
 
 const int SERIAL_READ = GENERIC_READ;
+const int SERIAL_WRITE = GENERIC_WRITE;
 
 #endif // __WIN32__
 
@@ -56,7 +57,9 @@ const int SERIAL_READ = GENERIC_READ;
 #include <sys/types.h>
 #include <fcntl.h>
 
-const int SERIAL_READ = O_RDWR;
+const int SERIAL_READ = O_RDONLY;
+const int SERIAL_WRITE = O_RDWR;
+
 
 #endif // __linux__
 
