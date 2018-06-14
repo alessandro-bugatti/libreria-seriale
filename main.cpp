@@ -58,6 +58,7 @@ int main()
         << "Premi 2 e invio per avviare la parte che fa lettura/scrittura dei dati da Arduino" << endl
         << "Arduino <--> PC" << endl;
     cin >> choice;
+    //Questo test va usato in coppia con LetturaSeriale su Arduino
     if (choice == 1)
     {
         //Apertura della porta seriale, in questo esempio la COM3
@@ -69,6 +70,9 @@ int main()
             return 1;
         }
         int read, i=0;
+        //Svuotamento di eventuali messaggi già presenti
+        //nel buffer di Arduino
+        while(serial_read(seriale,dataIn,1)>0);
         //10 letture, solo per verificare il funzionamento
         while(i < 10)
         {
@@ -85,6 +89,7 @@ int main()
                 printf("Timeout\n");
         }
     }
+    //Questo test va usato in coppia con EchoSeriale su Arduino
     else if (choice == 2)
     {
         //Apertura della porta seriale, in lettura/scrittura
@@ -97,6 +102,19 @@ int main()
         }
         int read, write, i=0;
         dataOut[0] = 'A';
+        //Svuota eventuali dati già presenti nel buffer di Arduino
+        while(i < 3)
+        {
+            read = serial_read(seriale,dataIn,100);
+            //La lettura è andata a buon fine
+            if (read != -1)
+            {
+                dataIn[read]='\0';
+                printf("%d %s \n",i+1,dataIn);
+                i++;
+            }
+        }
+        i = 0;
         //10 letture, solo per verificare il funzionamento
         while(i < 10)
         {
