@@ -181,6 +181,20 @@ int serial_read(int serial, char *buf, int n)
 #endif // __linux__
 }
 
+int serial_write(int serial, char *buf, int n)
+{
+#ifdef __WIN32__
+
+#endif // __WIN32__
+
+#ifdef __linux__
+    int letti = write(serial, buf, n);
+    if (letti == 0)
+        return -1;
+    return letti;
+#endif // __linux__
+}
+
 
 
 void serial_close(int serial)
