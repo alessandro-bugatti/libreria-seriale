@@ -186,7 +186,16 @@ int serial_read(int serial, char *buf, int n)
 int serial_write(int serial, char *buf, int n)
 {
 #ifdef __WIN32__
-
+    DWORD i;
+    WriteFile(
+        (void *)serial,//l'handle al file
+        buf, //puntatore al buffer dei dati
+        n, //dimensione dei dati che voglio leggere con una singola operazione
+        &i, //la variabile dove finiranno il numero di dati realmente letti
+        NULL //serve solo per overlapped I/O, nel nostro caso NULL
+        );
+    if (i == 0) return -1;
+    return i;
 #endif // __WIN32__
 
 #ifdef __linux__
