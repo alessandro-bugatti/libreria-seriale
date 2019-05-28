@@ -51,7 +51,7 @@ char dataOut[SIZE];
 int main()
 {
     int choice;
-    int seriale;
+    int seriale = INVALID_VALUE;
     cout << "Questo è un programma di test per l'utilizzo della seriale con Arduino." << endl
         << "Premi 1 e invio per avviare la parte che fa solo lettura dei dati da Arduino" << endl
         << "Arduino ---> PC" << endl
@@ -136,7 +136,8 @@ int main()
         }
     }
     //Chiusura della seriale
-    serial_close(seriale);
+    if (seriale != INVALID_VALUE)
+        serial_close(seriale);
     return 0;
 
 }
