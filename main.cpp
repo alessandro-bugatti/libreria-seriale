@@ -34,12 +34,12 @@
 
 using namespace std;
 #ifdef __WIN32__
-    #include <windows.h>
-    const string nome_seriale = "COM3";
+#include <windows.h>
+const string nome_seriale = "COM3";
 #endif // __WIN32__
 
 #ifdef __linux__
-    const string nome_seriale = "/dev/ttyACM0";
+const string nome_seriale = "/dev/ttyACM0";
 #endif // __linux__
 #include "seriale.h"
 
@@ -53,10 +53,10 @@ int main()
     int choice;
     int seriale = INVALID_VALUE;
     cout << "Questo è un programma di test per l'utilizzo della seriale con Arduino." << endl
-        << "Premi 1 e invio per avviare la parte che fa solo lettura dei dati da Arduino" << endl
-        << "Arduino ---> PC" << endl
-        << "Premi 2 e invio per avviare la parte che fa lettura/scrittura dei dati da Arduino" << endl
-        << "Arduino <--> PC" << endl;
+         << "Premi 1 e invio per avviare la parte che fa solo lettura dei dati da Arduino" << endl
+         << "Arduino ---> PC" << endl
+         << "Premi 2 e invio per avviare la parte che fa lettura/scrittura dei dati da Arduino" << endl
+         << "Arduino <--> PC" << endl;
     cin >> choice;
     //Questo test va usato in coppia con LetturaSeriale su Arduino
     if (choice == 1)
