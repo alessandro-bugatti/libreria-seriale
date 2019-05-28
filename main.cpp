@@ -66,7 +66,7 @@ int main()
         //Controllo dell'apertura
         if (seriale == INVALID_VALUE)
         {
-            printf("Apertura della seriale fallita\n");
+            cout << "Apertura della seriale fallita" << endl;
             return 1;
         }
         int read, i=0;
@@ -81,12 +81,12 @@ int main()
             if (read != -1)
             {
                 dataIn[read]='\0';
-                printf("%d byte letti\n%s \n",read,dataIn);
+                cout << read << " byte letti" << endl << dataIn << endl;
                 i++;
             }
             //Non c'era niente da leggere
             else
-                printf("Timeout\n");
+                cout << "Timeout" << endl;
         }
     }
     //Questo test va usato in coppia con EchoSeriale su Arduino
@@ -97,7 +97,7 @@ int main()
         //Controllo dell'apertura
         if (seriale == INVALID_VALUE)
         {
-            printf("Apertura della seriale fallita\n");
+            cout << "Apertura della seriale fallita" << endl;
             return 1;
         }
         int read, write, i=0;
@@ -110,7 +110,7 @@ int main()
             if (read != -1)
             {
                 dataIn[read]='\0';
-                printf("%d %s \n",i+1,dataIn);
+                cout << i+1 << " " << dataIn << endl;
                 i++;
             }
         }
@@ -126,12 +126,12 @@ int main()
             if (read != -1)
             {
                 dataIn[read]='\0';
-                printf("%d byte letti\n%s \n",read,dataIn);
+                cout << read << " byte letti" << endl << dataIn << endl;
                 i++;
             }
             //Non c'era niente da leggere
             else
-                printf("Timeout\n");
+                cout << "Timeout" << endl;
             dataOut[0]++;
         }
     }
