@@ -14,7 +14,7 @@ int serial_open(string porta_seriale, int mode, unsigned int speed, char parity,
         //Apertura della porta seriale
         fileHandle = CreateFile(
             porta_seriale.c_str(), //Nome della porta (COM1, COM2, COM3 ecc.
-            mode,//Apertura il lettura / scrittura
+            mode,//Apertura in lettura / scrittura
             0, //sharing mode, se 0 la porta non può essere condivisa
             0, //attributi di sicurezza, con 0 l'handle non può essere ereditato
             OPEN_EXISTING, //la porta deve esistere per poter essere aperta, altrimenti non può crearla
