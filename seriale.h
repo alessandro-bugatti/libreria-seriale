@@ -32,11 +32,11 @@
 #include <cstdio>
 #include <cstdlib>
 #ifdef __WIN32__
-    #include <windows.h>
+#include <windows.h>
 #endif // __WIN32__
 #ifdef __linux__
-    #include <termios.h>
-    #include <unistd.h>
+#include <termios.h>
+#include <unistd.h>
 #endif // __linux__
 #include <string>
 
