@@ -100,7 +100,7 @@ int main()
             cout << "Apertura della seriale fallita" << endl;
             return 1;
         }
-        int read, write, i=0;
+        int read, i=0;
         dataOut[0] = 'A';
         //Svuota eventuali dati già presenti nel buffer di Arduino
         while(i < 3)
@@ -119,7 +119,7 @@ int main()
         while(i < 10)
         {
             //Scrive un carattere
-            write = serial_write(seriale, dataOut,1);
+            serial_write(seriale, dataOut,1);
             //Il programma su Arduino invia dei dati quando riceve un carattere
             read = serial_read(seriale,dataIn,100);
             //La lettura è andata a buon fine
