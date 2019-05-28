@@ -69,10 +69,10 @@ const int INVALID_VALUE = -1;
  *
  * \param port Il nome della porta, potrebbe essere COM3 in Windows e /dev/ttyACM0 in linux
  * \param mode Modalità di lettura/scrittura:
-         GENERIC_READ per lettura,
-         GENERIC_WRITE per scrittura, possono essere messe
+         SERIAL_READ per lettura,
+         SERIAL_WRITE per scrittura, possono essere messe
          in OR logico per ottenere la modalità di lettura/scrittura
-         (GENERIC_READ | GENERIC_WRITE)
+         (SERIAL_READ | SERIAL_WRITE)
  * \param speed La velocità in bit/secondo
  * \param parity Un carattere che indica
     <ul>
